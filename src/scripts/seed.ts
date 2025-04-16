@@ -20,6 +20,7 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils";
 import Redis from "ioredis";
+import { asValue } from "awilix";
 
 export default async function seedDemoData({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);

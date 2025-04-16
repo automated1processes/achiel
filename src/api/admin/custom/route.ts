@@ -1,5 +1,10 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/medusa"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { EntityManager } from "typeorm"
+
+// Define the expected request body structure for the POST endpoint
+type AdminCustomActionRequestBody = {
+  action: string;
+};
 
 /**
  * @swagger
@@ -86,61 +91,61 @@ export const GET = async (
  *         description: Internal server error
  */
 export const POST = async (
-  req: MedusaRequest,
+  req: MedusaRequest<AdminCustomActionRequestBody>,
   res: MedusaResponse
 ) => {
-  const logger = req.scope.resolve("logger")
-  
+  const logger = req.scope.resolve("logger");
+
   try {
-    const { action } = req.body
+    const { action } = req.body;
 
     if (!action) {
       return res.status(400).json({
         success: false,
         message: "Action is required",
-      })
+      });
     }
 
-    logger.info(`Admin custom action requested: ${action}`)
+    logger.info(`Admin custom action requested: ${action}`);
 
     // Sample business logic based on action
-    let result
+    let result;
     switch (action) {
       case "refresh_cache":
         // Simulate cache refresh
-        result = { 
-          action: "refresh_cache", 
-          status: "completed", 
-          timestamp: new Date().toISOString() 
-        }
-        break
+        result = {
+          action: "refresh_cache",
+          status: "completed",
+          timestamp: new Date().toISOString(),
+        };
+        break;
       case "generate_report":
         // Simulate report generation
-        result = { 
-          action: "generate_report", 
-          status: "scheduled", 
+        result = {
+          action: "generate_report",
+          status: "scheduled",
           reportId: `report_${Date.now()}`,
-          timestamp: new Date().toISOString() 
-        }
-        break
+          timestamp: new Date().toISOString(),
+        };
+        break;
       default:
         return res.status(400).json({
           success: false,
           message: `Unsupported action: ${action}`,
-        })
+        });
     }
 
     return res.status(200).json({
       success: true,
       message: `Action '${action}' processed successfully`,
       data: result,
-    })
+    });
   } catch (error) {
-    logger.error("Error in admin custom POST endpoint", error)
+    logger.error("Error in admin custom POST endpoint", error);
     return res.status(500).json({
       success: false,
       message: "An error occurred while processing the custom action",
       error: error.message,
-    })
+    });
   }
-}
+};

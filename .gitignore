@@ -23,4 +23,17 @@ build
 !.yarn/sdks
 !.yarn/versions
 
+# Medusa build files
 .medusa
+.medusa/
+/dist/
+/cache/
+
+# OS & Editor files
+*.log
+*.swp
+.vscode/*
+
+# Build files that Render might create
+.render/
+/build/

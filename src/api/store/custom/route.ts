@@ -2,6 +2,22 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { HttpTypes } from "@medusajs/types";
 import logger from "../../../util/logger";
 
+// Define service interfaces
+interface ProductService {
+  list(selector: any, config: any): Promise<any[]>;
+}
+
+interface StoreService {
+  retrieve(id?: string): Promise<any>;
+}
+
+// Define request body type for the POST endpoint
+type StoreFeedbackRequestBody = {
+  email: string;
+  feedback: string;
+  rating?: number;
+};
+
 /**
  * GET handler for store custom route
  * Returns store information and featured products
@@ -11,8 +27,9 @@ export async function GET(
   res: MedusaResponse
 ) {
   try {
-    const productService = req.scope.resolve("productService");
-    const storeService = req.scope.resolve("storeService");
+    // Resolve services with explicit typing
+    const productService = req.scope.resolve("productService") as ProductService;
+    const storeService = req.scope.resolve("storeService") as StoreService;
     
     // Get query parameters with defaults
     const limit = parseInt(req.query.limit as string) || 5;
@@ -78,7 +95,7 @@ export async function POST(
   res: MedusaResponse
 ) {
   try {
-    const { email, feedback, rating } = req.body;
+    const { email, feedback, rating } = req.body as StoreFeedbackRequestBody;
     
     // Validate required fields
     if (!email || !feedback) {
