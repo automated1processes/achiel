@@ -19,6 +19,7 @@ import {
   Modules,
   ProductStatus,
 } from "@medusajs/framework/utils";
+import Redis from "ioredis";
 
 export default async function seedDemoData({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
@@ -27,6 +28,27 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
+
+  const redisUrl = process.env.REDIS_URL;
+  if (!redisUrl) {
+    throw new Error("REDIS_URL is not defined in the environment variables.");
+  }
+
+  const redisClient = new Redis(redisUrl, {
+    tls: {},
+  });
+
+  container.register({
+    redisClient: asValue(redisClient),
+  });
+
+  redisClient.on("connect", () => {
+    console.log("Connected to Redis successfully.");
+  });
+
+  redisClient.on("error", (err) => {
+    console.error("Redis connection error:", err);
+  });
 
   const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
 
