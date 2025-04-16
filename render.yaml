@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: medusa-backend
+    env: node
+    plan: starter
+    buildCommand: yarn --frozen-lockfile install; npx medusa migrations run; npm run build
+    startCommand: PORT=10000 npm run start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - fromFile: .env.render
